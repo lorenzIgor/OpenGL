@@ -4,6 +4,7 @@
 #include <GLFW/glfw3native.h>
 #include <iostream>
 
+
 bool _exit1 = 0;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -60,6 +61,7 @@ int main1()
 
     // make the window's context current
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
     // reset the window hints to default
     glfwDefaultWindowHints();
@@ -79,6 +81,7 @@ int main1()
     glfwSetWindowAttrib(window, GLFW_FLOATING, GLFW_TRUE);
 
     float fAngle = 0.0f;
+    float fIncre = 0.0f;
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
@@ -100,7 +103,8 @@ int main1()
         glVertex3f(-.5, .5, -1);
         glEnd();
 
-        fAngle += 0.01;  // at some point this will explote! overflow: put the corresponding of
+        fIncre += 0.01;
+        fAngle += sin(fIncre) ;  // at some point this will explote! overflow: put the corresponding of
 
         // swap front and back buffers
         glfwSwapBuffers(window);
