@@ -7,7 +7,9 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
+#include "Texture.h"
 #include "VertexArray.h"
+#include "VertexBufferLayout.h"
 
 bool bye = false;
 
@@ -55,10 +57,10 @@ int main(void)
 
     {
         float arrPosModel_1[]{
-            -0.1f, -0.1f, //0
-             0.1f, -0.1f, //1
-             0.1f,  0.1f, //2
-            -0.1f,  0.1f  //3
+            -0.5f, -0.5f, 0.0f,  0.0f, //0
+             0.5f, -0.5f, 1.0f,  0.0f, //1
+             0.5f,  0.5f, 1.0f,  1.0f, //2
+            -0.5f,  0.5f, 0.0f,  1.0f  //3
         };
 
         unsigned int indices_model_1[] = {
@@ -73,23 +75,34 @@ int main(void)
             -0.5f, -0.4f  //3
         };
 
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
+        GLCall(glEnable(GL_BLEND))
+        
         //Vertex Array Buffer
         VertexArray va1;
         const VertexBuffer vb(arrPosModel_1, sizeof(arrPosModel_1));
         VertexBufferLayout layout1;
         layout1.Push<float>(2);
+        layout1.Push<float>(2);
         va1.AddBuffer(vb, layout1);
 
-        VertexArray va2;
-        const VertexBuffer vb2(arrPosModel_2, sizeof(arrPosModel_2));
-        VertexBufferLayout layout2;
-        layout2.Push<float>(2);
-        va2.AddBuffer(vb2, layout2);
+        // VertexArray va2;
+        // const VertexBuffer vb2(arrPosModel_2, sizeof(arrPosModel_2));
+        // VertexBufferLayout layout2;
+        // layout2.Push<float>(2);
+        // va2.AddBuffer(vb2, layout2);
 
         const IndexBuffer ib(indices_model_1, sizeof(indices_model_1) / sizeof(unsigned int));
 
         Shader shader("res/shaders/Basic.shader");
-
+        shader.Bind();
+        
+        Texture texture("res/textures/teste.png");
+        texture.Bind(0);
+        shader.SetUniforms1i("u_Texture", 0);
+                
+        Renderer renderer;
+        
         float fRedColor = 0.0f;
         float fIncre = 0.05f;
 
@@ -97,16 +110,10 @@ int main(void)
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
-            //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-            glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        
-            shader.Bind();
-            shader.SetUniforms4f("u_Color", fRedColor, 0.3f, 0.8f, 1.0f);
+            renderer.Clear();
             
-            va1.Bind();
-            ib.Bind();
-            GLCall(glDrawElements(GL_TRIANGLES, sizeof(indices_model_1)/sizeof(unsigned int),GL_UNSIGNED_INT, nullptr));
+            shader.SetUniforms4f("u_Color", fRedColor, 0.3f, 0.8f, 1.0f);
+            renderer.Draw(va1, ib, shader);
 
             if (fRedColor > 1.0f)
                 fIncre = -0.005f;
@@ -115,12 +122,8 @@ int main(void)
         
             fRedColor += fIncre;
 
-            
-            shader.Bind();
-            shader.SetUniforms4f("u_Color", 1.0f - fRedColor, 0.3f, 0.8f, 1.0f);
-            va2.Bind();
-            ib.Bind();
-            GLCall(glDrawElements(GL_TRIANGLES, sizeof(indices_model_1) / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr));
+            // shader.SetUniforms4f("u_Color", 1.0f - fRedColor, 0.3f, 0.8f, 1.0f);
+            // renderer.Draw(va2, ib, shader);
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
