@@ -1,8 +1,11 @@
 #include <windows.h>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
 #include <fstream>
+
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -10,6 +13,9 @@
 #include "Texture.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 bool bye = false;
 
@@ -68,13 +74,6 @@ int main(void)
             2, 3 ,0
         };
 
-        float arrPosModel_2[]{
-            -0.5f, -0.5f, //0
-            -0.4f, -0.5f, //1
-            -0.4f, -0.4f, //2
-            -0.5f, -0.4f  //3
-        };
-
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
         GLCall(glEnable(GL_BLEND))
         
@@ -88,11 +87,14 @@ int main(void)
 
         const IndexBuffer ib(indices_model_1, sizeof(indices_model_1) / sizeof(unsigned int));
 
+        const glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+        
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniforms4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+        shader.SetUniformsMat4f("u_MVP", proj);
         
-        Texture texture("res/textures/sample.png");
+        Texture texture("res/textures/linux.png");
         texture.Bind(0);
         shader.SetUniforms1i("u_Texture", 0);
                 

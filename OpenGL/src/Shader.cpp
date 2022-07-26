@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
 #include <GL/glew.h>
 #include "Renderer.h"
 
@@ -98,8 +99,6 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
     return program;
 }
 
-
-
 void Shader::Bind() const
 {
     GLCall(glUseProgram(m_RendererID))
@@ -118,6 +117,11 @@ void Shader::SetUniforms1i(const std::string& name, int v0)
 void Shader::SetUniforms4f(const std::string& name, float v0, float v2, float v3, float v4)
 {
     GLCall(glUniform4f(GetUniformLocation(name), v0, v2, v3, v4))
+}
+
+void Shader::SetUniformsMat4f(const std::string& name, const glm::mat4& matrix)
+{
+    GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]))
 }
 
 int Shader::GetUniformLocation(const std::string& name)
