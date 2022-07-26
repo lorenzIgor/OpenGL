@@ -160,8 +160,8 @@
     <ClInclude Include="src\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="res\textures\claro.png" />
     <Content Include="res\textures\linux.png" />
+    <Content Include="res\textures\sample.png" />
     <Content Include="res\textures\teste.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
