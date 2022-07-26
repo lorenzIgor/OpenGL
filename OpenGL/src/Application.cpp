@@ -47,7 +47,7 @@ int main(void)
     
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* window = glfwCreateWindow(windowSizeW, windowSizeH, "Hello World", nullptr, nullptr);
-
+    
     if (!window)
     {
         glfwTerminate();
@@ -103,8 +103,9 @@ int main(void)
         glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
 
         // model = glm::rotate(model, glm::radians(10.0f), glm::vec3(1, 0 ,0));
-        float fScaleFactor = 100.0f;
-        glm::vec3 scale = glm::vec3(3.0f * fScaleFactor, 2.0f * fScaleFactor, 1.0f);
+        /* Scale */
+        float fScaleFactor = 0.5f;
+        glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
         model =  glm::scale(model, scale);
         
         glm::mat4 mvp = proj * view * model;
@@ -149,6 +150,8 @@ int main(void)
         bool show_demo_window = false;
         bool show_another_window = false;
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+        float fDegrees = 0; 
         
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
@@ -159,8 +162,10 @@ int main(void)
             renderer.Draw(va, ib, shader);
             
             model = glm::translate(glm::mat4(1.0f), translation);
-            scale = glm::vec3(3.0f * fScaleFactor, 2.0f * fScaleFactor, 1.0f);
+            scale = glm::vec3(static_cast<float>(texture.GetWidth()) * fScaleFactor, static_cast<float>(texture.GetHeight()) * fScaleFactor, 1.0f);
             model =  glm::scale(model, scale);
+            model = glm::rotate(model, glm::radians(fDegrees), glm::vec3(0, 0 ,-1));
+            fDegrees += 0.1f;
             mvp = proj * view * model;            
             shader.SetUniforms4f("u_Color", fRedColor, 0.3f, 0.8f, 1.0f);
             shader.SetUniformsMat4f("u_MVP", mvp);
@@ -186,7 +191,6 @@ int main(void)
 
             // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
             {
-                static float fSliderValue = 0.0f;
                 static int btnCounter = 0;
 
                 ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
@@ -197,9 +201,9 @@ int main(void)
 
                 ImGui::SliderFloat("TranslationX", &translation.x, 0.0f, (float)windowSizeW);            // Edit 1 float using a slider from 0.0f to 1.0f
                 ImGui::SliderFloat("TranslationY", &translation.y, 0.0f, (float)windowSizeH);            // Edit 1 float using a slider from 0.0f to 1.0f
-                ImGui::SliderFloat("Scale", &fScaleFactor, 0.0f, 500.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+                ImGui::SliderFloat("Scale", &fScaleFactor, 0.0f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
                 
-                ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+                ImGui::ColorEdit3("clear color", reinterpret_cast<float*>(&clear_color)); // Edit 3 floats representing a color
 
                 if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                     btnCounter++;
