@@ -22,6 +22,12 @@ void Renderer::Clear() const
     glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 }
 
+void Renderer::Clear(float r, float g, float b) const
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(r, g, b, 1.0f);
+}
+
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
 {
     shader.Bind();
