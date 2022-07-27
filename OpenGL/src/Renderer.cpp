@@ -1,3 +1,6 @@
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
 #include "Renderer.h"
 
 void GLClearError()

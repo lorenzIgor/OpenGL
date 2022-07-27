@@ -40,7 +40,7 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    // glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
     
     constexpr int windowSizeW = 1920;
     constexpr int windowSizeH = 1080;
@@ -206,6 +206,7 @@ int main(void)
 
                 if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                     btnCounter++;
+                
                 ImGui::SameLine();
                 ImGui::Text("counter = %d", btnCounter);
 

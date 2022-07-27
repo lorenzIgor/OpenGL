@@ -2,9 +2,10 @@
 
 #include <GL/glew.h>
 #include <iostream>
-#include "VertexArray.h"
-#include "IndexBuffer.h"
-#include "Shader.h"
+
+class VertexArray;
+class IndexBuffer;
+class Shader;
 
 #define ASSERT(x) if (!(x)) __debugbreak();
 #define GLCall(x)\
