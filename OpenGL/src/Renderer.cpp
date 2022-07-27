@@ -22,6 +22,12 @@ void Renderer::Clear() const
     glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 }
 
+void Renderer::ClearTranspatency() const
+{
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void Renderer::Clear(float r, float g, float b) const
 {
     glClear(GL_COLOR_BUFFER_BIT);

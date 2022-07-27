@@ -1,5 +1,3 @@
-#include <windows.h>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -41,7 +39,9 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+    // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    
     constexpr int windowSizeW = 1920;
     constexpr int windowSizeH = 1080;
     
@@ -54,13 +54,19 @@ int main(void)
         return -1;
     }
 
+    // glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
     /* Vsync Syncronized */
     glfwSwapInterval(1);
-
     glfwSetKeyCallback(window, key_callback2);
 
+    // glfwSetWindowPos(window, 0, 0);
+    // glfwShowWindow(window);
+    // glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
+    // glfwSetWindowAttrib(window, GLFW_FLOATING, GLFW_TRUE);
+    
     if(glewInit() != GLEW_OK)
         return -1;
 
@@ -92,17 +98,15 @@ int main(void)
 
         const IndexBuffer ib(indices_model_1, sizeof(indices_model_1) / sizeof(unsigned int));
 
-        // const glm::mat4 proj = glm::perspective(45.0f, static_cast<GLfloat>(windowSizeW) / static_cast<GLfloat>(windowSizeH), 1.0f, 150.0f);
         const glm::mat4 proj = glm::ortho(0.0f,
                                           static_cast<float>(windowSizeW),
                                           0.0f,
                                           static_cast<float>(windowSizeH), -1.0f, 1.0f);
         
-        const glm::mat4 view = translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f ,1.0f));
+        const glm::mat4 view = translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f ,0.0f));
         glm::vec3 translation = glm::vec3(static_cast<float>(windowSizeW) / 2, static_cast<float>(windowSizeH)/2 ,0);
         glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
 
-        // model = glm::rotate(model, glm::radians(10.0f), glm::vec3(1, 0 ,0));
         /* Scale */
         float fScaleFactor = 0.5f;
         glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -134,13 +138,7 @@ int main(void)
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
-        // io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-        // Setup Dear ImGui style
         ImGui::StyleColorsDark();
-        //ImGui::StyleColorsClassic();
 
         // Setup Platform/Renderer backends
         ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -158,6 +156,7 @@ int main(void)
         {
             /* Render here */
             renderer.Clear(clear_color.x, clear_color.y, clear_color.z);
+            // renderer.ClearTranspatency();
             shader.Bind();
             renderer.Draw(va, ib, shader);
             
@@ -201,8 +200,8 @@ int main(void)
 
                 ImGui::SliderFloat("TranslationX", &translation.x, 0.0f, (float)windowSizeW);            // Edit 1 float using a slider from 0.0f to 1.0f
                 ImGui::SliderFloat("TranslationY", &translation.y, 0.0f, (float)windowSizeH);            // Edit 1 float using a slider from 0.0f to 1.0f
-                ImGui::SliderFloat("Scale", &fScaleFactor, 0.0f, 5.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
                 
+                ImGui::SliderFloat("Scale", &fScaleFactor, 0.0f, 5.0f);                                  // Edit 1 float using a slider from 0.0f to 1.0f
                 ImGui::ColorEdit3("clear color", reinterpret_cast<float*>(&clear_color)); // Edit 3 floats representing a color
 
                 if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)

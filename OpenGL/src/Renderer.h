@@ -19,6 +19,7 @@ class Renderer
 {
 public:
     void Clear() const;
+    void ClearTranspatency() const;
     void Clear(float r, float g, float b) const;
     void Draw(const VertexArray& va, const IndexBuffer&, const Shader& shader) const;
     
