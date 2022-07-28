@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Model2D.h"
 #include "Shader.h"
 #include "TestClearColor.h"
 #include "Texture.h"
@@ -28,7 +29,7 @@ void key_callback2(GLFWwindow* window, int key, int scancode, int action, int mo
         bye = true;
 }
 
-int main(void)
+int main3(void)
 {
     //ShowWindow(GetConsoleWindow(), SW_SHOW);
 
@@ -157,18 +158,23 @@ int main(void)
         currTest = testMenu;
 
         testMenu->Register<test::TestClearColor>("Clear Color");
-       
-                       
+
+                      
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             renderer.Clear();
-            /* Render here */
-            // renderer.Clear(clear_color.x, clear_color.y, clear_color.z);
-            // // renderer.ClearTranspatency();
+
+            // *****************************************
+            //                                          
+            //  UNCOMMENT THE CODE BELOW FOR A CAT TEST
+            //
+            // *****************************************
+
+            
             // shader.Bind();
             // renderer.Draw(va, ib, shader);
-            //
+            
             // model = glm::translate(glm::mat4(1.0f), translation);
             // scale = glm::vec3(static_cast<float>(texture.GetWidth()) * fScaleFactor, static_cast<float>(texture.GetHeight()) * fScaleFactor, 1.0f);
             // model =  glm::scale(model, scale);
@@ -177,17 +183,15 @@ int main(void)
             // mvp = proj * view * model;            
             // shader.SetUniforms4f("u_Color", fRedColor, 0.3f, 0.8f, 1.0f);
             // shader.SetUniformsMat4f("u_MVP", mvp);
-            //
+
             // if (fRedColor > 1.0f)
             //     fIncre = -0.005f;
             // else if (fRedColor < 0.0f)
             //     fIncre = 0.005f;
             //
             // fRedColor += fIncre;
-             
-            // testClearColor.OnUpdate(0.0f);
-            // testClearColor.OnRender();
 
+            
             /* Poll for and process events */
             glfwPollEvents();
             
@@ -196,7 +200,6 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             
             ImGui::NewFrame();
-            // testClearColor.OnImGuiRender();
 
             if(currTest)
             {

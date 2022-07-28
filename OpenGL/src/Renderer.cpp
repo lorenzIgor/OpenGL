@@ -1,7 +1,17 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
+#include "Model2D.h"
 #include "Renderer.h"
+
+#include "Shape.h"
+
+
+Renderer::Renderer()
+{
+    proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
+    view = translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f ,0.0f));
+}
 
 void GLClearError()
 {
@@ -43,4 +53,32 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
     va.Bind();
     ib.Bind();
     GLCall(glDrawElements(GL_TRIANGLES, ib.GetCout(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::Draw(const VertexArray* va, const IndexBuffer* ib, const Shader* shader) const
+{
+    shader->Bind();
+    va->Bind();
+    ib->Bind();
+    GLCall(glDrawElements(GL_TRIANGLES, ib->GetCout(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::Draw(const Shape* shape) const
+{
+    shape->onDraw(proj, view);
+    GLCall(glDrawElements(GL_TRIANGLES, shape->getIndexBuffer()->GetCout(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::Draw() const
+{
+    for(const auto& shape : m_shapes){
+        shape->onDraw(proj, view);
+        GLCall(glDrawElements(GL_TRIANGLES, shape->getIndexBuffer()->GetCout(), GL_UNSIGNED_INT, nullptr));
+    }
+}
+
+void Renderer::AddShape(Shape* shape)
+{
+    if(shape)
+        m_shapes.push_back(shape);
 }
