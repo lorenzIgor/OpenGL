@@ -37,6 +37,9 @@ Shape::Shape(const char* texture_path)
     m_shader->Bind();
     m_shader->SetUniforms4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
 
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
+    GLCall(glEnable(GL_BLEND))
+    
     m_texture = new Texture(texture_path);
     m_texture->Bind(0);
     m_shader->SetUniforms1i("u_Texture", 0);
@@ -56,7 +59,9 @@ void Shape::onDraw(glm::mat4 proj, glm::mat4 view) const
 {
     m_shader->Bind();
     m_texture->Bind(0);
-    m_shader->SetUniformsMat4f("u_MVP", proj * view * this->getMatrix());
+    m_shader->SetUniformsMat4f("u_TransformMatrix", this->getTransformMatrix());
+    m_shader->SetUniformsMat4f("u_ViewMatrix", view);
+    m_shader->SetUniformsMat4f("u_ProjectionMatrix", proj);
     m_vertexArray->Bind();
-    m_indexBuffer->Bind();        
+    // m_indexBuffer->Bind();        
 }

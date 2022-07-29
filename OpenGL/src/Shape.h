@@ -7,9 +7,9 @@
 class Shape : public Transformable
 {
 private:
+    class VertexBuffer* m_vertexBuffer;
     class VertexArray* m_vertexArray;
     class IndexBuffer* m_indexBuffer;
-    class VertexBuffer* m_vertexBuffer;
     class VertexBufferLayout* m_layout;
     class Shader* m_shader;
     class Texture* m_texture;
@@ -21,6 +21,6 @@ public:
     VertexArray* getVertexArray() const { return m_vertexArray; }
     IndexBuffer* getIndexBuffer() const { return m_indexBuffer; }
     
-    inline glm::mat4 getMatrix() const { return glm::scale(glm::translate(glm::mat4(1.0f), this->getPosition()), this->getScale()); }
+    inline glm::mat4 getTransformMatrix() const { return glm::scale(glm::translate(glm::mat4(1.0f), this->getPosition()), this->getScale()); }
     inline Shader* getShader() const { return m_shader ; }
 };

@@ -16,7 +16,7 @@ class Shader
 private:
 	unsigned int m_RendererID;
 	std::string m_FilePath;
-	std::unordered_map<std::string, int> m_UniformLocationCache;
+	mutable std::unordered_map<std::string, int> m_UniformLocationCache;
 public:
 	Shader(const std::string& filepath);
 	~Shader();
@@ -27,7 +27,7 @@ public:
 	void SetUniforms4f(const std::string& name, float v0, float v2, float v3, float v4);
 	void SetUniformsMat4f(const std::string& str, const glm::mat4& matrix);
 private:
-	int GetUniformLocation(const std::string& name);
+	int GetUniformLocation(const std::string& name) const;
 	unsigned CompileShader(unsigned type, const std::string& source);
 };
 

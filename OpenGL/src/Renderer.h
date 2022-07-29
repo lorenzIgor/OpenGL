@@ -36,7 +36,7 @@ public:
     void Draw(const VertexArray* va, const IndexBuffer*, const Shader* shader) const;
     void Draw(const Shape* shape) const;
     void Draw() const;
-    
+  
     void AddShape(Shape* shape);
 private:
     std::vector<Shape*> m_shapes;
