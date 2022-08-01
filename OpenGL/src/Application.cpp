@@ -7,7 +7,8 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "Model2D.h"
+
+#include "Shape.h"
 #include "Shader.h"
 #include "TestClearColor.h"
 #include "Texture.h"
@@ -23,13 +24,17 @@
 
 bool bye = false;
 
+#define USE_MAIN_2
+
 void key_callback2(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_E && action == GLFW_PRESS)
         bye = true;
 }
 
-int main3(void)
+#ifdef USE_MAIN_1
+
+int main(void)
 {
     //ShowWindow(GetConsoleWindow(), SW_SHOW);
 
@@ -276,3 +281,125 @@ int main3(void)
     glfwTerminate();
     return 0;
 }
+
+#endif
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+#ifdef USE_MAIN_2
+int main(void)
+{
+    if (!glfwInit())
+        return -1;
+    
+    const char* glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    constexpr int windowSizeW = 1920;
+    constexpr int windowSizeH = 1080;
+    
+    GLFWwindow* window = glfwCreateWindow(windowSizeW, windowSizeH, "Hello World", nullptr, nullptr);
+    
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
+    
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSwapInterval(1);
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+    
+    if(glewInit() != GLEW_OK)
+        return -1;
+    
+    std::cout << glGetString(GL_VERSION) << std::endl;
+        
+    {
+        Renderer renderer;
+        // Shape shape("res/textures/sample.png");
+        
+
+        for(int i=0; i<100;i++)
+        {
+            Shape* shape = new Shape();
+            renderer.AddShape(shape);
+
+            float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
+            float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 9;
+            float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 40;
+            
+            shape->setPosition({0.0f, -0.5f, 1.0f});
+            shape->setScale({scale, scale, 1.0f});
+            shape->setSpeed({speed_x, speed_y, 1.0f});
+            
+        }
+        
+     
+        while (!glfwWindowShouldClose(window))
+        {
+            renderer.Clear();
+            renderer.Draw();
+
+            for(auto* shape: renderer.getShapes())
+            {
+
+                auto _pos = shape->getPosition();
+                
+
+                if(_pos.y < -10.0f)
+                {
+                    float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
+                    float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 10;
+                    float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 100;
+            
+                    shape->setPosition({0.0f, -0.5f, 1.0f});
+                    shape->setScale({scale, scale, 1.0f});
+                    shape->setSpeed({speed_x, speed_y, 1.0f});
+                    
+                    _pos = shape->getPosition();
+                }
+
+                auto _speed = shape->getSpeed();
+                
+                _pos.x += _speed.x;
+                _speed.y -= 0.00058f; 
+                _pos.y += _speed.y;
+                
+                shape->setSpeed(_speed);
+                shape->setPosition(_pos);
+            }
+            
+            glfwPollEvents();
+            glfwSwapBuffers(window);
+    
+        }
+
+        for(auto* shape: renderer.getShapes())
+        {
+            delete shape;
+        }
+    }
+    
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return 0;
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
+
+
+#endif

@@ -9,6 +9,7 @@ private:
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 scale;
+    glm::vec3 speed;
 public:
     glm::vec3 getPosition() const
     {
@@ -38,5 +39,15 @@ public:
     void setScale(const glm::vec3& scale)
     {
         this->scale = scale;
+    }
+
+    glm::vec3 getSpeed() const
+    {
+        return speed;
+    }
+
+    void setSpeed(const glm::vec3& speed)
+    {
+        this->speed = speed;
     }
 };

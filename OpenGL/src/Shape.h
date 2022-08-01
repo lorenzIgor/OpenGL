@@ -13,8 +13,12 @@ private:
     class VertexBufferLayout* m_layout;
     class Shader* m_shader;
     class Texture* m_texture;
+
+    
+    void Init();
 public:
     Shape(const char* texture_path);
+    Shape();
     ~Shape();
 
     void onDraw(glm::mat4 proj, glm::mat4 view) const ;

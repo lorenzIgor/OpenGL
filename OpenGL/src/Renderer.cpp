@@ -9,6 +9,10 @@
 
 Renderer::Renderer()
 {
+    GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
+    GLCall(glEnable(GL_BLEND))
+
     proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
     view = translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f ,0.0f));
 }
@@ -31,19 +35,19 @@ bool GLLogCall(const char* function, const char* file, int line)
 
 void Renderer::Clear() const
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 }
 
 void Renderer::ClearTranspatency() const
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Renderer::Clear(float r, float g, float b) const
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(r, g, b, 1.0f);
 }
 

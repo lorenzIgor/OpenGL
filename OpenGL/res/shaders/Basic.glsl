@@ -26,14 +26,14 @@ in vec2 v_TexCoord;
 
 uniform vec4 u_Color;
 uniform sampler2D u_Texture;
+uniform bool u_HasTexture;
 
 void main()
 {
-   vec4 texColor;
-   texColor = texture(u_Texture, v_TexCoord);
-   vec4 difuse = texColor * (u_Color * 2.5);
-   if(false){
-      difuse = texColor;
+   vec4 difuse = u_Color;
+   if(u_HasTexture){
+        difuse = texture(u_Texture, v_TexCoord) * (u_Color * 1.5);   
    }
+   
    color = difuse;
 };

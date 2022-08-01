@@ -23,7 +23,7 @@ public:
 
     Mesh2D* getMesh() const { return m_mesh; }
     Material* getMaterial() const { return m_material; }
-    glm::mat4 getMatrix() const {
+    glm::mat4 getTranformation() const {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), this->getPosition());
         // model = glm::translate(m_modelMatrix, this->get_rotation());
         model =  glm::scale(model, this->getScale());

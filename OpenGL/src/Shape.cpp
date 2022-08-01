@@ -7,16 +7,22 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 
-Shape::Shape(const char* texture_path)
+void Shape::Init()
 {
     this->setPosition({0.0f, 0.0f, 1.0f});
     this->setScale({1.0f, 1.0f, 1.0f});
+    this->setSpeed({0.0f, 0.0f, 0.0f});
     
     float arrPosModel_1[]{
         -1.0f, -1.0f, 0.0f, 0.0f, 
          1.0f, -1.0f, 1.0f, 0.0f, 
          1.0f,  1.0f, 1.0f, 1.0f, 
-        -1.0f,  1.0f, 0.0f, 1.0f
+        -1.0f,  1.0f, 0.0f, 1.0f,
+
+        -0.5f, -0.5f, 0.0f, 0.0f, 
+         0.5f, -0.5f, 1.0f, 0.0f, 
+         0.5f,  0.5f, 1.0f, 1.0f, 
+        -0.5f,  0.5f, 0.0f, 1.0f
     };
 
     unsigned int indices_model_1[] = {
@@ -35,14 +41,25 @@ Shape::Shape(const char* texture_path)
 
     m_shader = new Shader("res/shaders/Basic.glsl");
     m_shader->Bind();
-    m_shader->SetUniforms4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+    m_shader->SetUniforms4f("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
 
-    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
-    GLCall(glEnable(GL_BLEND))
-    
+}
+
+Shape::Shape(const char* texture_path)
+{
+    Init();
+   
     m_texture = new Texture(texture_path);
     m_texture->Bind(0);
     m_shader->SetUniforms1i("u_Texture", 0);
+    m_shader->SetUniforms1i("u_HasTexture", 1);
+}
+
+Shape::Shape()
+{
+    Init();
+
+    m_shader->SetUniforms1i("u_HasTexture", 0);
 }
 
 Shape::~Shape()
@@ -58,7 +75,8 @@ Shape::~Shape()
 void Shape::onDraw(glm::mat4 proj, glm::mat4 view) const
 {
     m_shader->Bind();
-    m_texture->Bind(0);
+    if(m_texture)
+        m_texture->Bind(0);
     m_shader->SetUniformsMat4f("u_TransformMatrix", this->getTransformMatrix());
     m_shader->SetUniformsMat4f("u_ViewMatrix", view);
     m_shader->SetUniformsMat4f("u_ProjectionMatrix", proj);

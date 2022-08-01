@@ -38,6 +38,12 @@ public:
     void Draw() const;
   
     void AddShape(Shape* shape);
+
+    std::vector<Shape*> getShapes() const
+    {
+        return m_shapes;
+    }
+
 private:
     std::vector<Shape*> m_shapes;
     glm::mat4 proj;
