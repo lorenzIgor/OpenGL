@@ -46,6 +46,7 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
     // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
     // glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
     
@@ -325,22 +326,20 @@ int main(void)
         Renderer renderer;
         // Shape shape("res/textures/sample.png");
         
-
-        for(int i=0; i<100;i++)
+        for(int i=0; i<1000;i++)
         {
             Shape* shape = new Shape();
             renderer.AddShape(shape);
 
             float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
-            float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 9;
-            float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 40;
+            float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 8;
+            float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 20;
             
             shape->setPosition({0.0f, -0.5f, 1.0f});
             shape->setScale({scale, scale, 1.0f});
             shape->setSpeed({speed_x, speed_y, 1.0f});
             
         }
-        
      
         while (!glfwWindowShouldClose(window))
         {
@@ -356,8 +355,8 @@ int main(void)
                 if(_pos.y < -10.0f)
                 {
                     float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
-                    float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 10;
-                    float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 100;
+                    float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 8;
+                    float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 20;
             
                     shape->setPosition({0.0f, -0.5f, 1.0f});
                     shape->setScale({scale, scale, 1.0f});

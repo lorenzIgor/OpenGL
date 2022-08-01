@@ -34,6 +34,14 @@ void main()
    if(u_HasTexture){
         difuse = texture(u_Texture, v_TexCoord) * (u_Color * 1.5);   
    }
+
+//   color = difuse;
+//   color = vec4(1.0 - (gl_FragCoord.y / 1080), (gl_FragCoord.y / 1080), (gl_FragCoord.y / 1080), (gl_FragCoord.y / 1080) * 10) * 1.5;
    
-   color = difuse;
+//   vec2 u_resolution = vec2(1920.0,1080.0);
+//   vec2 st = gl_FragCoord.xy/u_resolution;
+//   
+   gl_FragColor = vec4(1.0 - (gl_FragCoord.y / 1080), (gl_FragCoord.y / 1080), (gl_FragCoord.y / 1080), (gl_FragCoord.y / 1080) * 10) * 1.5;
+ 
 };
+

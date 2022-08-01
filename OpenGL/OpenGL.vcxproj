@@ -240,6 +240,7 @@
     <None Include="res\shaders\Basic.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\Interfaces\Transformable.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Mesh2D.h" />
@@ -247,6 +248,7 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\shader_m.h" />
     <ClInclude Include="src\Shape.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\tests\TestClearColor.h" />
@@ -684,10 +686,14 @@
     <ClInclude Include="src\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="res\shaders\7.4.camera.vs.glsl" />
     <Content Include="res\textures\linux.png" />
     <Content Include="res\textures\sample.png" />
     <Content Include="res\textures\teste.png" />
     <Content Include="src\vendor\glm\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="res\shaders\7.4.camera.fs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
