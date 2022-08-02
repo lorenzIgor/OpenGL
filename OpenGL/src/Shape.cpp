@@ -7,6 +7,8 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 
+
+
 void Shape::Init()
 {
     this->setPosition({0.0f, 0.0f, 1.0f});
@@ -18,11 +20,6 @@ void Shape::Init()
          1.0f, -1.0f, 1.0f, 0.0f, 
          1.0f,  1.0f, 1.0f, 1.0f, 
         -1.0f,  1.0f, 0.0f, 1.0f,
-
-        -0.5f, -0.5f, 0.0f, 0.0f, 
-         0.5f, -0.5f, 1.0f, 0.0f, 
-         0.5f,  0.5f, 1.0f, 1.0f, 
-        -0.5f,  0.5f, 0.0f, 1.0f
     };
 
     unsigned int indices_model_1[] = {

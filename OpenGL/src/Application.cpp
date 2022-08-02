@@ -27,24 +27,34 @@
 
 #include FT_FREETYPE_H
 
-struct Character {
-    unsigned int TextureID;  // ID handle of the glyph texture
-    glm::ivec2   Size;       // Size of glyph
-    glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
-    unsigned int Advance;    // Offset to advance to next glyph
-};
-
-std::map<char, Character> Characters;
-
 bool bye = false;
 
-#define USE_MAIN_2
+struct Quad
+{
+    glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    glm::vec3 scale    = {0.0f, 0.0f, 0.0f};
+    glm::vec3 speed    = {0.0f, 0.0f, 0.0f};
+
+    float buffer[30] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f
+    };
+
+};
+
+#define USE_MAIN_3
 
 void key_callback2(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_E && action == GLFW_PRESS)
         bye = true;
 }
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
 
 #ifdef USE_MAIN_1
 
@@ -61,9 +71,6 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
-    // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-    // glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-    
     constexpr int windowSizeW = 1920;
     constexpr int windowSizeH = 1080;
     
@@ -76,18 +83,11 @@ int main(void)
         return -1;
     }
 
-    // glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
-    /* Vsync Syncronized */
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, key_callback2);
-
-    // glfwSetWindowPos(window, 0, 0);
-    // glfwShowWindow(window);
-    // glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
-    // glfwSetWindowAttrib(window, GLFW_FLOATING, GLFW_TRUE);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
     if(glewInit() != GLEW_OK)
         return -1;
@@ -298,35 +298,10 @@ int main(void)
 }
 
 #endif
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
 #ifdef USE_MAIN_2
 int main(void)
 {
 
-    FT_Library ft;
-    if (FT_Init_FreeType(&ft))
-    {
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-        return -1;
-    }
-
-    FT_Face face;
-    if (FT_New_Face(ft, "res/fonts/Orbitron/Orbitron-Medium.ttf", 0, &face))
-    {
-        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;  
-        return -1;
-    }
-
-    FT_Set_Pixel_Sizes(face, 0, 48);  
-
-    if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
-    {
-        std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;  
-        return -1;
-    }
-    
     if (!glfwInit())
         return -1;
     
@@ -350,10 +325,7 @@ int main(void)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
-
-    glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-    
+   
     if(glewInit() != GLEW_OK)
         return -1;
     
@@ -361,9 +333,8 @@ int main(void)
         
     {
         Renderer renderer;
-        // Shape shape("res/textures/sample.png");
         
-        for(int i=0; i<1000;i++)
+        for(int i=0; i<600;i++)
         {
             Shape* shape = new Shape();
             renderer.AddShape(shape);
@@ -374,12 +345,22 @@ int main(void)
             
             shape->setPosition({0.0f, -0.5f, 1.0f});
             shape->setScale({scale, scale, 1.0f});
-            shape->setSpeed({speed_x, speed_y, 1.0f});
-            
+            shape->setSpeed({speed_x, speed_y, 1.0f});            
         }
-     
+
+        float deltaTime = 0.0f;
+        float lastFrame = 0.0f;
+
+      
         while (!glfwWindowShouldClose(window))
-        {
+        {            // calculate delta time
+            // --------------------
+            float currentFrame = glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
+            std::cout << 1 / deltaTime << "(fps) >> " << deltaTime * 1000 << "(ms)"<< std::endl;
+            
             renderer.Clear();
             renderer.Draw();
 
@@ -388,7 +369,6 @@ int main(void)
 
                 auto _pos = shape->getPosition();
                 
-
                 if(_pos.y < -10.0f)
                 {
                     float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
@@ -428,6 +408,94 @@ int main(void)
     return 0;
 }
 
+#endif
+#ifdef USE_MAIN_3
+int main(void)
+{
+
+    if (!glfwInit())
+        return -1;
+    
+    const char* glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    constexpr int windowSizeW = 1920;
+    constexpr int windowSizeH = 1080;
+    
+    GLFWwindow* window = glfwCreateWindow(windowSizeW, windowSizeH, "_h", nullptr, nullptr);
+    
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
+    
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSwapInterval(1);
+   
+    if(glewInit() != GLEW_OK)
+        return -1;
+
+    char title [256];
+    float avgDelta = 0.0f;
+   
+    std::cout << glGetString(GL_VERSION) << std::endl;
+        
+    {
+        float deltaTime = 0.0f;
+        float lastFrame = 0.0f;
+        float maxTicks = 100;
+        float ticks = maxTicks;
+        while (!glfwWindowShouldClose(window))
+        {
+            // calculate delta time
+            // --------------------
+            float currentFrame = glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
+            // std::cout << 1 / deltaTime << "(fps) >> " << deltaTime * 1000 << "(ms)"<< std::endl;
+            
+            if(ticks++ >= maxTicks)
+            {
+                title [255] = '\0';
+                snprintf ( title, 255, "[FPS: %3.2f]", avgDelta / maxTicks);            
+                glfwSetWindowTitle(window, title);
+                ticks = 0;
+                avgDelta = 0;
+            }else
+            {
+                avgDelta += (1 / deltaTime);
+            }
+            
+            processInput(window);
+
+            Quad quad;
+            
+            glfwPollEvents();
+            glfwSwapBuffers(window);
+    
+        }
+
+    }
+    
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return 0;
+}
+
+#endif
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -436,6 +504,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-
-
-#endif

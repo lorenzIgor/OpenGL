@@ -48,5 +48,4 @@ private:
     std::vector<Shape*> m_shapes;
     glm::mat4 proj;
     glm::mat4 view;
-    
 };
