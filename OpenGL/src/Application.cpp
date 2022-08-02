@@ -22,6 +22,20 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include <ft2build.h>
+#include <map>
+
+#include FT_FREETYPE_H
+
+struct Character {
+    unsigned int TextureID;  // ID handle of the glyph texture
+    glm::ivec2   Size;       // Size of glyph
+    glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
+    unsigned int Advance;    // Offset to advance to next glyph
+};
+
+std::map<char, Character> Characters;
+
 bool bye = false;
 
 #define USE_MAIN_2
@@ -290,6 +304,29 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 #ifdef USE_MAIN_2
 int main(void)
 {
+
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft))
+    {
+        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        return -1;
+    }
+
+    FT_Face face;
+    if (FT_New_Face(ft, "res/fonts/Orbitron/Orbitron-Medium.ttf", 0, &face))
+    {
+        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;  
+        return -1;
+    }
+
+    FT_Set_Pixel_Sizes(face, 0, 48);  
+
+    if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
+    {
+        std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;  
+        return -1;
+    }
+    
     if (!glfwInit())
         return -1;
     
