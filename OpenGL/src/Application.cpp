@@ -46,7 +46,7 @@ struct Quad
 
 };
 
-#define USE_MAIN_3
+#define USE_MAIN_2
 
 void key_callback2(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -55,6 +55,7 @@ void key_callback2(GLFWwindow* window, int key, int scancode, int action, int mo
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+void update(float dt);
 
 #ifdef USE_MAIN_1
 
@@ -95,14 +96,14 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << std::endl;
     
     {
-        float arrPosModel_1[]{
+        float vertices[]{
             -1.0f, -1.0f, 0.0f, 0.0f, 
              1.0f, -1.0f, 1.0f, 0.0f, 
              1.0f,  1.0f, 1.0f, 1.0f, 
             -1.0f,  1.0f, 0.0f, 1.0f
         };
 
-        unsigned int indices_model_1[] = {
+        unsigned int indices[] = {
             0, 1 ,2,
             2, 3 ,0
         };
@@ -112,13 +113,13 @@ int main(void)
         
         //Vertex Array Buffer
         VertexArray va;
-        const VertexBuffer vb(arrPosModel_1, sizeof(arrPosModel_1));
+        const VertexBuffer vb(vertices, sizeof(vertices));
         VertexBufferLayout layout;
         layout.Push<float>(2);
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
-        const IndexBuffer ib(indices_model_1, sizeof(indices_model_1) / sizeof(unsigned int));
+        const IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
 
         const glm::mat4 proj = glm::ortho(0.0f,
                                           static_cast<float>(windowSizeW),
@@ -136,7 +137,7 @@ int main(void)
         
         glm::mat4 mvp = proj * view * model;
 
-        Shader shader("res/shaders/Basic.glsl");
+        Shader shader("res/shaders/Basic1.glsl");
         
         shader.Bind();
         shader.SetUniforms4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
@@ -145,7 +146,8 @@ int main(void)
         Texture texture("res/textures/sample.png");
         texture.Bind(0);
         shader.SetUniforms1i("u_Texture", 0);
-                
+        shader.SetUniforms1i("u_HasTexture", 1);
+                        
         Renderer renderer;
 
         shader.Unbind();
@@ -185,32 +187,24 @@ int main(void)
         {
             renderer.Clear();
 
-            // *****************************************
-            //                                          
-            //  UNCOMMENT THE CODE BELOW FOR A CAT TEST
-            //
-            // *****************************************
+            shader.Bind();
+            model = glm::translate(glm::mat4(1.0f), translation);
+            scale = glm::vec3(static_cast<float>(texture.GetWidth()) * fScaleFactor, static_cast<float>(texture.GetHeight()) * fScaleFactor, 1.0f);
+            model =  glm::scale(model, scale);
+            model = glm::rotate(model, glm::radians(fDegrees), glm::vec3(0, 0 ,-1));
+            fDegrees += 0.1f;
+            mvp = proj * view * model;            
+            shader.SetUniforms4f("u_Color", fRedColor, 0.3f, 0.8f, 1.0f);
+            shader.SetUniformsMat4f("u_MVP", mvp);
 
+            if (fRedColor > 1.0f)
+                fIncre = -0.005f;
+            else if (fRedColor < 0.0f)
+                fIncre = 0.005f;
             
-            // shader.Bind();
-            // renderer.Draw(va, ib, shader);
+            fRedColor += fIncre;
             
-            // model = glm::translate(glm::mat4(1.0f), translation);
-            // scale = glm::vec3(static_cast<float>(texture.GetWidth()) * fScaleFactor, static_cast<float>(texture.GetHeight()) * fScaleFactor, 1.0f);
-            // model =  glm::scale(model, scale);
-            // model = glm::rotate(model, glm::radians(fDegrees), glm::vec3(0, 0 ,-1));
-            // fDegrees += 0.1f;
-            // mvp = proj * view * model;            
-            // shader.SetUniforms4f("u_Color", fRedColor, 0.3f, 0.8f, 1.0f);
-            // shader.SetUniformsMat4f("u_MVP", mvp);
-
-            // if (fRedColor > 1.0f)
-            //     fIncre = -0.005f;
-            // else if (fRedColor < 0.0f)
-            //     fIncre = 0.005f;
-            //
-            // fRedColor += fIncre;
-
+            renderer.Draw(va, ib, shader);
             
             /* Poll for and process events */
             glfwPollEvents();
@@ -299,117 +293,7 @@ int main(void)
 
 #endif
 #ifdef USE_MAIN_2
-int main(void)
-{
 
-    if (!glfwInit())
-        return -1;
-    
-    const char* glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-    constexpr int windowSizeW = 1920;
-    constexpr int windowSizeH = 1080;
-    
-    GLFWwindow* window = glfwCreateWindow(windowSizeW, windowSizeH, "Hello World", nullptr, nullptr);
-    
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-    
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSwapInterval(1);
-    glEnable(GL_DEPTH_TEST);
-   
-    if(glewInit() != GLEW_OK)
-        return -1;
-    
-    std::cout << glGetString(GL_VERSION) << std::endl;
-        
-    {
-        Renderer renderer;
-        
-        for(int i=0; i<600;i++)
-        {
-            Shape* shape = new Shape();
-            renderer.AddShape(shape);
-
-            float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
-            float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 8;
-            float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 20;
-            
-            shape->setPosition({0.0f, -0.5f, 1.0f});
-            shape->setScale({scale, scale, 1.0f});
-            shape->setSpeed({speed_x, speed_y, 1.0f});            
-        }
-
-        float deltaTime = 0.0f;
-        float lastFrame = 0.0f;
-
-      
-        while (!glfwWindowShouldClose(window))
-        {            // calculate delta time
-            // --------------------
-            float currentFrame = glfwGetTime();
-            deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
-
-            std::cout << 1 / deltaTime << "(fps) >> " << deltaTime * 1000 << "(ms)"<< std::endl;
-            
-            renderer.Clear();
-            renderer.Draw();
-
-            for(auto* shape: renderer.getShapes())
-            {
-
-                auto _pos = shape->getPosition();
-                
-                if(_pos.y < -10.0f)
-                {
-                    float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
-                    float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 8;
-                    float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 20;
-            
-                    shape->setPosition({0.0f, -0.5f, 1.0f});
-                    shape->setScale({scale, scale, 1.0f});
-                    shape->setSpeed({speed_x, speed_y, 1.0f});
-                    
-                    _pos = shape->getPosition();
-                }
-
-                auto _speed = shape->getSpeed();
-                
-                _pos.x += _speed.x;
-                _speed.y -= 0.00058f; 
-                _pos.y += _speed.y;
-                
-                shape->setSpeed(_speed);
-                shape->setPosition(_pos);
-            }
-            
-            glfwPollEvents();
-            glfwSwapBuffers(window);
-    
-        }
-
-        for(auto* shape: renderer.getShapes())
-        {
-            delete shape;
-        }
-    }
-    
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    return 0;
-}
-
-#endif
-#ifdef USE_MAIN_3
 int main(void)
 {
 
@@ -445,6 +329,22 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << std::endl;
         
     {
+        Renderer renderer;
+        
+        for(int i=0; i<100;i++)
+        {
+            Shape* shape = new Shape();
+            renderer.AddShape(shape);
+
+            float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
+            float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 8;
+            float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 20;
+            
+            shape->setPosition({0.0f, -0.5f, 1.0f});
+            shape->setScale({scale, scale, 1.0f});
+            shape->setSpeed({speed_x, speed_y, 1.0f});            
+        }
+
         float deltaTime = 0.0f;
         float lastFrame = 0.0f;
         float maxTicks = 100;
@@ -453,12 +353,10 @@ int main(void)
         {
             // calculate delta time
             // --------------------
-            float currentFrame = glfwGetTime();
+            float currentFrame = static_cast <float>(glfwGetTime());
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
-            // std::cout << 1 / deltaTime << "(fps) >> " << deltaTime * 1000 << "(ms)"<< std::endl;
-            
             if(ticks++ >= maxTicks)
             {
                 title [255] = '\0';
@@ -471,9 +369,38 @@ int main(void)
                 avgDelta += (1 / deltaTime);
             }
             
+            renderer.Clear();            
             processInput(window);
+            update(deltaTime);
+            
+            for(auto& shape: renderer.getShapes())
+            {
+                auto _pos = shape->getPosition();
+                
+                if(_pos.y < -10.0f)
+                {
+                    float scale = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 20;
+                    float speed_y = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) / 8;
+                    float speed_x = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) / 20;
+            
+                    shape->setPosition({0.0f, -0.5f, 1.0f});
+                    shape->setScale({scale, scale, 1.0f});
+                    shape->setSpeed({speed_x, speed_y, 1.0f});
+                    
+                    _pos = shape->getPosition();
+                }
 
-            Quad quad;
+                auto _speed = shape->getSpeed();
+                
+                _pos.x += _speed.x;
+                _speed.y -= 0.00058f; 
+                _pos.y += _speed.y;
+                
+                shape->setSpeed(_speed);
+                shape->setPosition(_pos);
+            }
+
+            renderer.Draw();
             
             glfwPollEvents();
             glfwSwapBuffers(window);
@@ -481,13 +408,19 @@ int main(void)
         }
 
     }
-    
+
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
 
 #endif
+
+
+void update(float dt)
+{
+    // std::cout << dt << std::endl;
+}
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
